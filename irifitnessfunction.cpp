@@ -245,81 +245,32 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	}
 	
 	/* FROM HERE YOU NEED TO CREATE YOU FITNESS */	
-
-	//double fitness = coef1 * ( 1 )  + coef2 * (1) + ( 1 - coef1 - coef2 ) * (1);
-
-	/* Start Light Exp 1 */
-  	//double fitness = maxSpeedEval * sameDirectionEval * maxLightSensorEval;
-	/* EndLight Exp 1 */
-
-	//EXP 1 (yellow light)
-/*	double coef0=0.5;
-	double fitness= coef0 * maxSpeedEval * sameDirectionEval;
-  	if ( maxLightSensorEval != 0.0 )
-    		fitness += (coef0 * ( lightS0 + lightS7));*/
-
-	/* Start Light Exp2/Exp3 */
-	/*
-	 double coef1 = 0.25;
-	 double coef2 = 0.75;
-	 double fitness= coef1 * maxSpeedEval * sameDirectionEval;
-	  if ( maxBlueLightSensorEval != 0.0 )
-	    fitness += (coef2 * ( blueLightS0 + blueLightS7));
-	  else
-	    fitness += (coef2 * ( lightS0 + lightS7));*/
-		/* End Light Exp2/Exp3 */
-		
-		/* Start Light Exp4 */
-	 /* double coef1 = 0.25;
-	  double coef2 = 0.75;
-	  double fitness= coef1 * maxSpeedEval * sameDirectionEval;
-
-	  if ( m_unBlueLightFlag == 0 && maxBlueLightSensorEval != 0.0 )
-	  {
-	    m_unBlueLightFlag = 1;
-	    m_unVirtualCounter = 0;
-	  }
-  
-	  if ( m_unBlueLightFlag == 1 && maxBlueLightSensorEval == 0.0 )
-	  {
-	    m_unBlueLightFlag = 0;
-	    m_unVirtualCounter = 0;
-	  }
-	  m_unVirtualCounter++;
-
-	  if (m_unVirtualCounter > 100)
-	  {
-	    if ( m_unBlueLightFlag == 1)
-	    {
-	      if ( maxBlueLightSensorEval > 0.7 )
-		fitness += (1/0.3) * (maxBlueLightSensorEval - 0.7);
-	      if (maxLightSensorEval > 0.5)
-		fitness -= (1/0.5) * (maxLightSensorEval - 0.5);
-	    }
-	    else
-	    {
-	      if ( maxLightSensorEval > 0.7 )
-		fitness += (1/0.3) * (maxLightSensorEval - 0.7);
-	      if (maxBlueLightSensorEval > 0.5)
-		fitness -= (1/0.5) * (maxBlueLightSensorEval - 0.5);
-	    }
-	  }*/
-
-	/* End Light Exp 4 */
 	// NUESTRO EXPERIMENTO FITNESS (batería)//
+	
+	double fitness = 0.0;
+	double coef0 = ((exp(1-battery[0])-1)/(exp(1)-1));
+	double coef1 = 0.5;
+ 	double coef2 = 0.3;
+	double coef3 = 0.2;
+	
+	//fitness = coef1 * ( maxSpeedEval *sameDirectionEval *(1 - maxProxSensorEval) *(leftSpeed * rightSpeed ) ) +coef2 * ( battery[0] ) +(1- coef1 - coef2 ) * ( maxLightSensorEval );
 
-	double coef0 = ((exp(1-(*redBattery))-1)/(exp(1)-1));
-	double coef1 = 0.25-coef0/4;
- 	double coef2 = 0.75-(coef0*3)/4;
-	
- 	double fitness= coef1 * maxSpeedEval * sameDirectionEval ;
-	
-	if ( maxRedLightSensorEval != 0.0 && (*redBattery)<=0.25)
-		fitness += (coef0* ( redLightS0 + redLightS7));
-	else if ( maxBlueLightSensorEval != 0.0 )
-		fitness += (coef2 * ( blueLightS0 + blueLightS7));
-	else if (maxLightSensorEval != 0.0 )
+
+	fitness= (coef1 * maxSpeedEval * sameDirectionEval)+ (coef3 * maxLightSensorEval );
+
+	if(battery[0]>0.2){
+		if((maxRedLightSensorEval != 0.0) && (maxLightSensorEval != 0.0)){
+			fitness += (coef2 * ( redLightS0 + redLightS7));
+		}else if((maxBlueLightSensorEval != 0.0) && (maxLightSensorEval != 0.0)){	
+			fitness += (coef2* ( blueLightS0 + blueLightS7));
+		}else{
+			fitness += 0.0;
+		}
+		
+	}else {
 		fitness += (coef2 * ( lightS0 + lightS7));
+	}
+
 
 
 	/* TO HERE YOU NEED TO CREATE YOU FITNESS */	

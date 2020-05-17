@@ -11,7 +11,7 @@ CLightObject::CLightObject(const char* pch_name) : CGeometry(pch_name)
 	m_fExtRadius=0.0;
 	m_fGrey=1.0;
 
-	m_nActivation = true;//
+	m_nActivation = true;
 }
 
 /******************************************************************************/
@@ -118,7 +118,7 @@ int CLightObject::GetStatus ( void )
 
 void CLightObject::Reset ( void )
 {
-  m_nActivation = true;//
+  m_nActivation = true;
 }
 
 /******************************************************************************/
@@ -132,11 +132,11 @@ int CLightObject::GetTiming ( unsigned int n_step_number )
   //printf("Act: Yellow: %d\n", m_nActivation);
 
 	/* Create sequence */
-  if ( !(n_step_number % 300) )
+  /*if ( !(n_step_number % 300) )
   {
     // toggle light //
     m_nActivation ^= 0x1;
-  }
+  }*/
 
 	/* default return true */
 	return m_nActivation;

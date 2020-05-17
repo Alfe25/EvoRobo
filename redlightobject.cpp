@@ -11,7 +11,7 @@ CRedLightObject::CRedLightObject(const char* pch_name) : CGeometry(pch_name)
 	m_fExtRadius=0.0;
 	m_fGrey=1.0;
 
-	m_nActivation = true;
+	m_nActivation = false;
 }
 
 /******************************************************************************/
@@ -118,7 +118,7 @@ int CRedLightObject::GetStatus ( void )
 
 void CRedLightObject::Reset ( void )
 {
-  m_nActivation = true;
+  m_nActivation = false;
 }
 
 /******************************************************************************/
@@ -128,11 +128,11 @@ int CRedLightObject::GetTiming ( unsigned int n_step_number )
 {
 
 	/* Create sequence */
-	/*if ( !(n_step_number % 110) )
+	if ( !(n_step_number % 400) )
 	{
 		// toggle light //
 		m_nActivation ^= 0x1;
-	}*/
+	}
 
 	/* default return true */
 	return m_nActivation;

@@ -11,7 +11,7 @@ CBlueLightObject::CBlueLightObject(const char* pch_name) : CGeometry(pch_name)
 	m_fExtRadius=0.0;
 	m_fGrey=1.0;
 	
-	m_nActivation = false;
+	m_nActivation = true;
 }
 
 /******************************************************************************/
@@ -118,7 +118,7 @@ int CBlueLightObject::GetStatus ( void )
 
 void CBlueLightObject::Reset ( void )
 {
-  m_nActivation = false;
+  m_nActivation = true;
 }
 
 /******************************************************************************/
@@ -130,7 +130,7 @@ int CBlueLightObject::GetTiming ( unsigned int n_step_number )
   //printf("Act: Blue: %d\n", m_nActivation);
 	
 	/* Create sequence */
-  if ( !(n_step_number % 300) )
+  if ( !(n_step_number % 400) )
   {
     // toggle light //
     m_nActivation ^= 0x1;
