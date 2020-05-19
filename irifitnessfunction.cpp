@@ -30,6 +30,11 @@ CIriFitnessFunction::CIriFitnessFunction(const char* pch_name,
 
 	m_unNumberOfSteps = 0;
 	m_fComputedFitness = 0.0;
+			
+	m_unGreyFlag = 0;
+	m_unGreyCounter = 0;
+	m_unBlueLightFlag = 0;
+	m_unRedLightFlag = 0;
 	
 }
 
@@ -248,29 +253,41 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	// NUESTRO EXPERIMENTO FITNESS (batería)//
 	
 	double fitness = 0.0;
-	double coef0 = ((exp(1-battery[0])-1)/(exp(1)-1));
-	double coef1 = 0.5;
- 	double coef2 = 0.3;
-	double coef3 = 0.2;
+	double batt=0.2;
+	double coef0 = ((exp(1-battery[0]+batt)-1)/(exp(1)-1));
+
 	
-	//fitness = coef1 * ( maxSpeedEval *sameDirectionEval *(1 - maxProxSensorEval) *(leftSpeed * rightSpeed ) ) +coef2 * ( battery[0] ) +(1- coef1 - coef2 ) * ( maxLightSensorEval );
+	//fitness = coef1 * ( maxSpeedEval *sameDirectionEval *(1 - maxProxSensorEval) *(leftSpeed * rightSpeed ) ) +coef2 * ( battery[0] ) +(1-coef3 ) * ( maxLightSensorEval );
 
 
-	fitness= (coef1 * maxSpeedEval * sameDirectionEval)+ (coef3 * maxLightSensorEval );
+	fitness= ( maxSpeedEval * sameDirectionEval);
 
-	if(battery[0]>0.2){
+	if(battery[0]>batt){
 		if((maxRedLightSensorEval != 0.0) && (maxLightSensorEval != 0.0)){
-			fitness += (coef2 * ( redLightS0 + redLightS7));
+			fitness *= ( redLightS0 + redLightS7);
 		}else if((maxBlueLightSensorEval != 0.0) && (maxLightSensorEval != 0.0)){	
-			fitness += (coef2* ( blueLightS0 + blueLightS7));
+			fitness *= ( blueLightS0 + blueLightS7);
 		}else{
 			fitness += 0.0;
 		}
 		
-	}else {
-		fitness += (coef2 * ( lightS0 + lightS7));
+	}else if(battery[0]<=batt){
+		fitness *= ( lightS0 + lightS7);
+		if(battery[0]<=0.0){
+			fitness *= 0.0;
+		}
+		
+	}else{
+		fitness *= 0.0;
 	}
 
+
+
+	/* TO HERE YOU NEED TO CREATE YOU FITNESS */	
+
+	m_unNumberOfSteps++;
+	m_fComputedFitness += fitness;
+	
 
 
 	/* TO HERE YOU NEED TO CREATE YOU FITNESS */	
