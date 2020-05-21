@@ -51,6 +51,10 @@ protected:
 		unsigned int m_unBlueLightFlag;
 		unsigned int m_unRedLightFlag;
    		unsigned int m_unVirtualCounter;
+		unsigned int m_unGreyFlag;
+		unsigned int m_unGreyCounter;
+		unsigned int battFlag;
+		unsigned int cont;
 		
    		
 };

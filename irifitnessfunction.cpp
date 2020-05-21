@@ -35,6 +35,8 @@ CIriFitnessFunction::CIriFitnessFunction(const char* pch_name,
 	m_unGreyCounter = 0;
 	m_unBlueLightFlag = 0;
 	m_unRedLightFlag = 0;
+	battFlag=0;
+	cont=0;
 	
 }
 
@@ -253,41 +255,68 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	// NUESTRO EXPERIMENTO FITNESS (batería)//
 	
 	double fitness = 0.0;
-	double batt=0.2;
-	double coef0 = ((exp(1-battery[0]+batt)-1)/(exp(1)-1));
+	double minBatt=0.3;
+	double maxBatt=0.9;
+	//double coef0 = ((exp(1-battery[0]+minBatt)-1)/(exp(1)-1));
 
 	
-	//fitness = coef1 * ( maxSpeedEval *sameDirectionEval *(1 - maxProxSensorEval) *(leftSpeed * rightSpeed ) ) +coef2 * ( battery[0] ) +(1-coef3 ) * ( maxLightSensorEval );
-
-
 	fitness= ( maxSpeedEval * sameDirectionEval);
-
-	if(battery[0]>batt){
-		if((maxRedLightSensorEval != 0.0) && (maxLightSensorEval != 0.0)){
+/*
+	// El robot va de las luces azules a las rojas
+	if(true){
+		
+		if(maxRedLightSensorEval != 0.0){
 			fitness *= ( redLightS0 + redLightS7);
-		}else if((maxBlueLightSensorEval != 0.0) && (maxLightSensorEval != 0.0)){	
+		}else if(maxBlueLightSensorEval != 0.0){	
 			fitness *= ( blueLightS0 + blueLightS7);
 		}else{
 			fitness += 0.0;
 		}
-		
-	}else if(battery[0]<=batt){
-		fitness *= ( lightS0 + lightS7);
-		if(battery[0]<=0.0){
-			fitness *= 0.0;
-		}
-		
-	}else{
-		fitness *= 0.0;
+	}
+	// Si el robot está parado o va marcha atrás
+	if(leftSpeed<=0.5 && rightSpeed<=0.5){
+		cont++;
+	}
+	if(cont>10){
+		fitness*=0.0;
 	}
 
+*/
 
-
-	/* TO HERE YOU NEED TO CREATE YOU FITNESS */	
-
-	m_unNumberOfSteps++;
-	m_fComputedFitness += fitness;
+	// Para cargar el robot
+	if(battery[0]<=minBatt){
+		battFlag=1;
+	}
+	if(battery[0]>=maxBatt){
+		battFlag=0;
+	}
+	if(battery[0]==0.0){
+		fitness *= 0.0;
+	}
 	
+	// Movimiento del robot segun el estado de la bateria
+	if(battFlag==1){
+		fitness += 0.8*( lightS0 + lightS7);
+	}else{
+		
+		if(maxRedLightSensorEval != 0.0){
+			fitness *= ( redLightS0 + redLightS7);
+		}
+		else if(maxBlueLightSensorEval != 0.0){	
+			fitness *= ( blueLightS0 + blueLightS7);
+		}else{
+			fitness += 0.0;
+		}
+	}
+	
+	
+	//Si el robot está parado o va marcha atrás
+	if(leftSpeed<=0.5 && rightSpeed<=0.5){
+		cont++;
+	}
+	if(cont>10){
+		fitness*=0.0;
+	}
 
 
 	/* TO HERE YOU NEED TO CREATE YOU FITNESS */	
