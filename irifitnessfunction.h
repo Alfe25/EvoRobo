@@ -40,6 +40,7 @@ public:
 protected:
 		unsigned int m_unNumberOfSteps;
 		double 	m_fComputedFitness;
+		unsigned int m_unState;
 		CEpuck* m_pcEpuck;
 		CRedBatterySensor* m_seRedBattery;
 		CBatterySensor* m_seBattery;
@@ -55,6 +56,8 @@ protected:
 		unsigned int m_unGreyCounter;
 		unsigned int battFlag;
 		unsigned int cont;
+		unsigned int m_unCollisionsNumber;
+
 		
    		
 };
