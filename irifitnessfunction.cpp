@@ -1,6 +1,9 @@
 #include "irifitnessfunction.h"
 #include "collisionmanager.h"
 
+#define SEARCH 	0
+#define DEPOSIT 1
+
 /******************************************************************************/
 /******************************************************************************/
 
@@ -30,6 +33,7 @@ CIriFitnessFunction::CIriFitnessFunction(const char* pch_name,
 
 	m_unNumberOfSteps = 0;
 	m_fComputedFitness = 0.0;
+	m_unState = SEARCH;
 			
 	m_unGreyFlag = 0;
 	m_unGreyCounter = 0;
@@ -56,7 +60,14 @@ double CIriFitnessFunction::GetFitness()
 	int coll = (CCollisionManager::GetInstance()->GetTotalNumberOfCollisions());
 
 	/* Get the fitness divided by the number of steps */
-	double fit = ( m_fComputedFitness / (double) m_unNumberOfSteps ) * (1 - ((double) (fmin(coll,10.0)/10.0)));
+// Fitness de avoid, light y load:
+	//double fit = ( m_fComputedFitness / (double) m_unNumberOfSteps ) * (1 - ((double) (fmin(coll,10.0)/10.0)));
+// End fitness avoid, light, load //
+
+// Fitness de garbage:
+	double fit = ( m_fComputedFitness / (double) m_unNumberOfSteps ) * (1 - ((double) (fmin(coll,30.0)/30.0)))* ((double) (fmin(m_unGreyCounter, 5.0)/5.0));
+	
+// End fitness garbage //
 
 	/* If fitness less than 0, put it to 0 */
 	if ( fit < 0.0 ) fit = 0.0;
@@ -103,9 +114,9 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	double maxContactSensorEval = 0.0;
 
 	/* Where the GROUND MEMORY will be stored */
-	double* groundMemory;
+	double *groundMemory;
 	/* Where the GROUND will be stored */
-	double* ground;
+	double *ground;
 	/* whre the BATTERY will be sotored */
 	double *battery;
 	/* whre the BLUE BATTERY will be sotored */
@@ -254,14 +265,14 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	/* FROM HERE YOU NEED TO CREATE YOU FITNESS */	
 	// NUESTRO EXPERIMENTO FITNESS (batería)//
 	
-	double fitness = 0.0;
+	double fitness = 1.0;
 	double minBatt=0.3;
 	double maxBatt=0.9;
 	//double coef0 = ((exp(1-battery[0]+minBatt)-1)/(exp(1)-1));
 
-	
-	fitness= ( maxSpeedEval * sameDirectionEval);
+
 /*
+// LIGHT FITNESS //
 	// El robot va de las luces azules a las rojas
 	if(true){
 		
@@ -274,16 +285,21 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 		}
 	}
 	// Si el robot está parado o va marcha atrás
-	if(leftSpeed<=0.5 && rightSpeed<=0.5){
+	if(leftSpeed<=0.5 || rightSpeed<=0.5){
 		cont++;
 	}
-	if(cont>10){
+	if(leftSpeed>0.5 && rightSpeed>0.5){
+		cont=0;
+	}
+	if(cont>5){
 		fitness*=0.0;
 	}
 
-*/
+	fitness *= ( maxSpeedEval * sameDirectionEval);*/
 
-	// Para cargar el robot
+
+/*
+// LOAD FITNESS //
 	if(battery[0]<=minBatt){
 		battFlag=1;
 	}
@@ -311,12 +327,72 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	
 	
 	//Si el robot está parado o va marcha atrás
-	if(leftSpeed<=0.5 && rightSpeed<=0.5){
+	if(leftSpeed<=0.5 || rightSpeed<=0.5){
 		cont++;
 	}
-	if(cont>10){
+	if(leftSpeed>0.5 && rightSpeed>0.5){
+		cont=0;
+	}
+	if(cont>5){
 		fitness*=0.0;
 	}
+
+	fitness *= ( maxSpeedEval * sameDirectionEval);
+*/
+
+
+
+//Solo garbage: //
+
+/*	
+	if(groundMemory[0] > 0.0){
+		fitness *= ( blueLightS0 + blueLightS7);
+		if (m_unGreyFlag == 0){
+			fitness +=0.05;
+			m_unGreyFlag = 1;
+			m_unGreyCounter++;
+		}
+	}
+	if(groundMemory[0] == 0.0){	
+		fitness *= ( redLightS0 + redLightS7);
+		if (m_unGreyFlag == 1){
+			m_unGreyFlag = 0;
+		}
+	}
+	fitness *= ( maxSpeedEval * sameDirectionEval);
+*/
+// GARBAGE FITNESS //
+	if(battery[0]<=minBatt){
+		battFlag=1;
+	}
+	if(battery[0]>=maxBatt){
+		battFlag=0;
+	}
+	if(battery[0]==0.0){
+		fitness *= 0.0;
+	}
+	
+	// Movimiento del robot segun el estado de la bateria
+	if(battFlag==1){
+		fitness *=( lightS0 + lightS7);
+	}else{
+		
+		if(groundMemory[0] > 0.0){
+			fitness *= ( blueLightS0 + blueLightS7);
+			if (m_unGreyFlag == 0){
+				m_unGreyFlag = 1;
+				m_unGreyCounter++;
+			}
+		}else{	
+			fitness *= ( redLightS0 + redLightS7);
+			if (m_unGreyFlag == 1){
+				m_unGreyFlag = 0;
+			}
+		}
+	}
+
+	fitness *= ( maxSpeedEval * sameDirectionEval);
+	
 
 
 	/* TO HERE YOU NEED TO CREATE YOU FITNESS */	
