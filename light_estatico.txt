@@ -23,15 +23,8 @@ NUMBER OF RED LIGHT OBJECTS  	= 1
 LIGHT 1 X POSITION	= 1
 LIGHT 1 Y POSITION	= -1
 
-NUMBER OF GROUND AREA	= 2
-GROUND AREA 2 X POSITION										= 1
-GROUND AREA 2 Y POSITION										= -1
-GROUND AREA 2 RADIUS												= 0.3
-GROUND AREA 2 COLOR (0.0 Black, 0.5 Grey)	= 0.5
-GROUND AREA 3 X POSITION										= -1
-GROUND AREA 3 Y POSITION										= 1
-GROUND AREA 3 RADIUS												= 0.3
-GROUND AREA 3 COLOR (0.0 Black, 0.5 Grey)	= 0.0
+NUMBER OF GROUND AREA	= 0
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%% SENSORS %%%%%%%%%%%%%%%%%%%%%%

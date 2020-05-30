@@ -60,11 +60,12 @@ double CIriFitnessFunction::GetFitness()
 	int coll = (CCollisionManager::GetInstance()->GetTotalNumberOfCollisions());
 
 	/* Get the fitness divided by the number of steps */
-// Fitness de avoid, light y load:
+
+// Fitness de avoid, light y load: //
 	//double fit = ( m_fComputedFitness / (double) m_unNumberOfSteps ) * (1 - ((double) (fmin(coll,10.0)/10.0)));
 // End fitness avoid, light, load //
 
-// Fitness de garbage:
+// Fitness de garbage: //
 	double fit = ( m_fComputedFitness / (double) m_unNumberOfSteps ) * (1 - ((double) (fmin(coll,30.0)/30.0)))* ((double) (fmin(m_unGreyCounter, 5.0)/5.0));
 	
 // End fitness garbage //
@@ -296,7 +297,7 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	}
 
 	fitness *= ( maxSpeedEval * sameDirectionEval);*/
-
+// END LIGHT FITNESS //
 
 /*
 // LOAD FITNESS //
@@ -312,7 +313,7 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	
 	// Movimiento del robot segun el estado de la bateria
 	if(battFlag==1){
-		fitness += 0.8*( lightS0 + lightS7);
+		fitness *= ( lightS0 + lightS7);
 	}else{
 		
 		if(maxRedLightSensorEval != 0.0){
@@ -339,12 +340,12 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 
 	fitness *= ( maxSpeedEval * sameDirectionEval);
 */
+// END LOAD FITNESS //
 
 
-
-//Solo garbage: //
-
-/*	
+// ONLY GARBAGE //
+/*
+	
 	if(groundMemory[0] > 0.0){
 		fitness *= ( blueLightS0 + blueLightS7);
 		if (m_unGreyFlag == 0){
@@ -360,8 +361,13 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 		}
 	}
 	fitness *= ( maxSpeedEval * sameDirectionEval);
+
 */
+// END ONLY GARBAGE //
+
+
 // GARBAGE FITNESS //
+
 	if(battery[0]<=minBatt){
 		battFlag=1;
 	}
@@ -391,9 +397,20 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 		}
 	}
 
+	//Si el robot está parado o va marcha atrás
+	if(leftSpeed<=0.5 || rightSpeed<=0.5){
+		cont++;
+	}
+	if(leftSpeed>0.5 && rightSpeed>0.5){
+		cont=0;
+	}
+	if(cont>5){
+		fitness*=0.0;
+	}
+
 	fitness *= ( maxSpeedEval * sameDirectionEval);
 	
-
+// END GARBAGE FITNESS //
 
 	/* TO HERE YOU NEED TO CREATE YOU FITNESS */	
 
